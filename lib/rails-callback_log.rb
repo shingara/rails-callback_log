@@ -38,8 +38,10 @@ module RailsCallbackLog
     # @override_target will be set. If the callback was a symbol method name
     # then @method_name will be set.
     def expand(target, value, block)
-      ::RailsCallbackLog.log(@override_block || @override_target || @method_name)
-
+       if !['HoldingSetting', 'ActiveRecord::ConnectionAdapters::PostgreSQLAdapter', 'ActiveStorage::Attachment', 'ActiveStorage::Blob'].include?(target.class.to_s) &&
+          !['ActiveRecord::Validations::PresenceValidator', 'ActiveSupport::Callbacks::Conditionals::Value'].include?(@override_target.class.to_s)
+        ::RailsCallbackLog.log("#{target.class} => #{@override_block || @override_target || @method_name}")
+       end
       super(target, value, block)
     end
   end
